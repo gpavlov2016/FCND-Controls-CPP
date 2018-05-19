@@ -12,6 +12,15 @@
 #include <systemlib/param/param.h>
 #endif
 
+#define GRAVITY	9.81
+
+static void limit(V3F &vec, float a, float b)
+{
+	vec.x = CONSTRAIN(vec.x, a, b);
+	vec.y = CONSTRAIN(vec.y, a, b);
+	vec.z = CONSTRAIN(vec.z, a, b);
+}
+
 
 void QuadControl::Init()
 {
@@ -55,16 +64,6 @@ void QuadControl::Init()
 #endif
 }
 
-bool QuadControl::check_thrust()
-{
-	for (int i = 0; i < 4; i++) 
-	{
-		if (cmd.desiredThrustsN[i] < minMotorThrust || cmd.desiredThrustsN[i] > maxMotorThrust)
-			return false;
-	}
-
-	return true;
-}
 VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momentCmd)
 {
   // Convert a desired 3-axis moment and collective thrust command to 
@@ -224,7 +223,7 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
   //u_bar = CONSTRAIN(u_bar, -maxAscentRate, maxDescentRate);
   float b_z = R(2, 2);
   //float acc = (g - u_bar) / b_z;
-  float acc = (u_bar / mass + accelZCmd - g)/b_z;
+  float acc = (u_bar / mass + accelZCmd - GRAVITY)/b_z;
   thrust = -mass*acc;
   //printf("e = %.3f\n", e);
   //printf("e_dot = %.3f\n", e_dot);
@@ -341,9 +340,3 @@ VehicleCommand QuadControl::RunControl(float dt, float simTime)
   return GenerateMotorCommands(collThrustCmd, desMoment);
 }
 
-void QuadControl::limit(V3F &vec, float a, float b)
-{
-	vec.x = CONSTRAIN(vec.x,a,b);
-	vec.y = CONSTRAIN(vec.y,a,b);
-	vec.z = CONSTRAIN(vec.z,a,b);
-}
