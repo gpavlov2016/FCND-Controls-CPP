@@ -80,7 +80,7 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
   // You'll need the arm length parameter L, and the drag/thrust ratio kappa
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-	float l = L / sqrt(2);
+	float l =  L / (float) sqrt(2);
 
 	float A = collThrustCmd;
 	float B = momentCmd.x / l;
@@ -223,7 +223,7 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
   //u_bar = CONSTRAIN(u_bar, -maxAscentRate, maxDescentRate);
   float b_z = R(2, 2);
   //float acc = (g - u_bar) / b_z;
-  float acc = (u_bar / mass + accelZCmd - GRAVITY)/b_z;
+  float acc = (float)(u_bar / mass + accelZCmd - GRAVITY)/b_z;
   thrust = -mass*acc;
   //printf("e = %.3f\n", e);
   //printf("e_dot = %.3f\n", e_dot);
@@ -282,7 +282,7 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
   return -accelCmd;
 }
 
-static const double     _PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348;
+//static const double     _PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348;
 
 // returns desired yaw rate
 float QuadControl::YawControl(float yawCmd, float yaw)
@@ -299,6 +299,7 @@ float QuadControl::YawControl(float yawCmd, float yaw)
 
   float yawRateCmd=0;
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  yawCmd = fmodf(yawCmd, (float)(2.0*M_PI));
   yawRateCmd = kpYaw * (yawCmd - yaw);
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
